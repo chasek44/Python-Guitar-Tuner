@@ -1,22 +1,19 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
+
+
+# gui class
+# designed with QTDesigner
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(650, 650)
         MainWindow.setStyleSheet("background-color: #1e1e1e;")
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-        self.welcomeText = QtWidgets.QTextEdit(parent=self.centralwidget)
-        self.welcomeText.setGeometry(QtCore.QRect(130, 50, 371, 71))
-        font = QtGui.QFont()
-        font.setFamily("Inter")
-        self.welcomeText.setFont(font)
-        self.welcomeText.setStyleSheet("color: white;")
-        self.welcomeText.setObjectName("welcomeText")
         self.upArrow = QtWidgets.QLabel(parent=self.centralwidget)
-        self.upArrow.setGeometry(QtCore.QRect(270, 155, 72, 59))
+        self.upArrow.setGeometry(QtCore.QRect(290, 170, 72, 59))
         font = QtGui.QFont()
         font.setFamily("Inter")
         font.setPointSize(36)
@@ -26,7 +23,7 @@ class Ui_MainWindow(object):
         self.upArrow.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.upArrow.setObjectName("upArrow")
         self.downArrow = QtWidgets.QLabel(parent=self.centralwidget)
-        self.downArrow.setGeometry(QtCore.QRect(270, 343, 72, 59))
+        self.downArrow.setGeometry(QtCore.QRect(290, 358, 72, 59))
         font = QtGui.QFont()
         font.setFamily("Inter")
         font.setPointSize(36)
@@ -36,7 +33,7 @@ class Ui_MainWindow(object):
         self.downArrow.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.downArrow.setObjectName("downArrow")
         self.noteText = QtWidgets.QLabel(parent=self.centralwidget)
-        self.noteText.setGeometry(QtCore.QRect(270, 220, 72, 117))
+        self.noteText.setGeometry(QtCore.QRect(290, 235, 72, 117))
         font = QtGui.QFont()
         font.setFamily("Inter")
         font.setPointSize(72)
@@ -48,6 +45,19 @@ class Ui_MainWindow(object):
 "background-color: transparent;")
         self.noteText.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.noteText.setObjectName("noteText")
+        self.textEdit = QtWidgets.QTextEdit(parent=self.centralwidget)
+        self.textEdit.setGeometry(QtCore.QRect(30, 40, 591, 81))
+        font = QtGui.QFont()
+        font.setFamily("Inter")
+        font.setBold(True)
+        font.setWeight(75)
+        self.textEdit.setFont(font)
+        self.textEdit.setStyleSheet("color: white;\n"
+"background: transparent;")
+        self.textEdit.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.textEdit.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.textEdit.setReadOnly(True)
+        self.textEdit.setObjectName("textEdit")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(parent=MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
@@ -60,6 +70,7 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(parent=MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.menuInput.addSeparator()
         self.menubar.addAction(self.menuInput.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -68,22 +79,33 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Python Guitar Tuner"))
-        self.welcomeText.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Inter\'; font-size:7.875pt; font-weight:400; font-style:normal;\">\n"
-"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:26pt; font-weight:600;\">Python Guitar Tuner</span></p></body></html>"))
         self.upArrow.setText(_translate("MainWindow", "↑"))
         self.downArrow.setText(_translate("MainWindow", "↓"))
         self.noteText.setText(_translate("MainWindow", "A"))
+        self.textEdit.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Inter\'; font-size:7.875pt; font-weight:600; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'MS Shell Dlg 2\'; font-size:48pt; font-weight:400;\">Python Guitar Tuner</span></p></body></html>"))
         self.menuInput.setTitle(_translate("MainWindow", "Input"))
 
 
 if __name__ == "__main__":
     import sys
+    import sounddevice as sd
+    from PyQt6.QtGui import QAction
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+
+    ui.menuInput.clear()
+    for i, device in enumerate(sd.query_devices()):
+        if device['max_input_channels'] > 0:
+            action = QAction(device['name'], MainWindow)
+            action.triggered.connect(lambda checked, idx=i: print("Selected:", sd.query_devices(idx)['name']))
+            ui.menuInput.addAction(action)
+
     MainWindow.show()
     sys.exit(app.exec())
